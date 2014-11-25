@@ -28,6 +28,11 @@ describe('the module', function () {
           expect(http[name]).to.be.a('function');
         };
       });
+
+      it('is not the http module though', function () {
+        var http = module.create();
+        expect(http).not.to.equal(require('http'), 'should not be the same object');
+      });
     })
   })
 })

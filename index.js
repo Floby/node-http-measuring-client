@@ -1,3 +1,5 @@
+var http = require('http');
+
 exports.create = function createHttp() {
-  return require('http');
+  return Object.create(http);
 };
