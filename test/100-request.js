@@ -90,16 +90,25 @@ describe('measure-http', function () {
           });
           mhttp.request(options);
           request.emit('response', response);
-          process.nextTick(function () {
+          setTimeout(function () {
             response.emit('end');
             done();
-          });
+          }, 100);
         });
 
         it('is called with the parsed uri', function () {
           var uri = listenerArgs[0];
           expect(uri).to.equal(options);
           expect(url.format(uri)).to.equal('http://bidu.le');
+        });
+
+        describe('when the request takes some time to reply', function () {
+          it('is called with a stats object, with a totalTime field', function () {
+            var stats = listenerArgs[1];
+            expect(stats).to.be.an('object');
+            expect(stats).to.have.property('totalTime');
+            expect(stats.totalTime).to.be.within(100, 102); // setTimeout is not that perfect
+          });
         });
       });
     })
