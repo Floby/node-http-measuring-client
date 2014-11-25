@@ -23,5 +23,9 @@
   "bugs": {
     "url": "https://github.com/Floby/node-http-measuring-client/issues"
   },
-  "homepage": "https://github.com/Floby/node-http-measuring-client"
+  "homepage": "https://github.com/Floby/node-http-measuring-client",
+  "devDependencies": {
+    "istanbul": "^0.3.2",
+    "mocha": "^2.0.1"
+  }
 }
