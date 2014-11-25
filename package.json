@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/Floby/node-http-measuring-client",
   "devDependencies": {
+    "chai": "^1.10.0",
     "istanbul": "^0.3.2",
     "mocha": "^2.0.1"
   }
