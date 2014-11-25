@@ -1,0 +1,27 @@
+{
+  "name": "http-measuring-client",
+  "version": "0.0.0",
+  "description": "like the http module, except with stats",
+  "main": "index.js",
+  "scripts": {
+    "test": "istanbul cover --print detail _mocha -- -R spec test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Floby/node-http-measuring-client.git"
+  },
+  "keywords": [
+    "http",
+    "stats",
+    "outbound",
+    "measure",
+    "logs",
+    "monitoring"
+  ],
+  "author": "Florent Jaby <florent.jaby@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Floby/node-http-measuring-client/issues"
+  },
+  "homepage": "https://github.com/Floby/node-http-measuring-client"
+}
