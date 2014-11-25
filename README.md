@@ -51,6 +51,13 @@ Comprehensive Documentation
   * `totalTime` : total time taken for the request in milliseconds
 
 
+TODO
+----
+
+* Obviously support https as well
+* More detailed stats than `totalTime` (waitingTime, transmittingTime, etc.)
+* interconnection with logging frameworks like bunyan or winston
+
 
 Test
 ----
