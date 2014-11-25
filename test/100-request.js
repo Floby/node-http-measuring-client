@@ -1,3 +1,4 @@
+var url = require('url');
 var EventEmitter = require('events').EventEmitter;
 var expect = require('chai').expect;
 var assert = require('chai').assert;
@@ -32,7 +33,7 @@ describe('measure-http', function () {
         request = new EventEmitter();
         http.request.restore();
         sinon.stub(http, 'request', function (url, onResponse) {
-          request.on('response', onResponse);
+          if(onResponse) request.on('response', onResponse);
           return request;
         });
       });
@@ -49,6 +50,57 @@ describe('measure-http', function () {
           assert(onStat.calledOnce, 'event stat was not triggered');
           done();
         }, 20)
+      });
+
+      describe('the emitted event', function () {
+        var listenerArgs;
+        beforeEach(function (done) {
+          mhttp.on('stat', function() {
+            listenerArgs = [].slice.call(arguments);
+          });
+          mhttp.request('http://bidu.le/');
+          request.emit('response', response);
+          process.nextTick(function () {
+            response.emit('end');
+            done();
+          });
+        });
+
+        it('is called with the parsed uri', function () {
+          var uri = listenerArgs[0];
+          expect(uri).to.be.an('object');
+          expect(uri).to.have.property('host');
+          expect(uri).to.have.property('hostname');
+          expect(uri).to.have.property('path');
+          expect(uri).to.have.property('protocol');
+          expect(url.format(uri)).to.equal('http://bidu.le/');
+        });
+      });
+
+      describe('when called on a options hash', function () {
+        var listenerArgs;
+        var options = {
+          protocol: 'http',
+          hostname: 'bidu.le',
+          path: '/'
+        };
+        beforeEach(function (done) {
+          mhttp.on('stat', function() {
+            listenerArgs = [].slice.call(arguments);
+          });
+          mhttp.request(options);
+          request.emit('response', response);
+          process.nextTick(function () {
+            response.emit('end');
+            done();
+          });
+        });
+
+        it('is called with the parsed uri', function () {
+          var uri = listenerArgs[0];
+          expect(uri).to.equal(options);
+          expect(url.format(uri)).to.equal('http://bidu.le');
+        });
       });
     })
   });
