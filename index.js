@@ -1,5 +1,6 @@
 var url = require('url');
 var http = require('http');
+var https = require('https');
 var EventEmitter = require('events').EventEmitter;
 var mixin = require('merge-descriptors');
 var Timer = require('./lib/timer');
@@ -39,4 +40,8 @@ exports.create = function createHttp(httpModule) {
     return req;
   }
 
+};
+
+exports.createSecure = function () {
+  return exports.create(https);
 };

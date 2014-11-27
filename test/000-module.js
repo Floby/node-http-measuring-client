@@ -49,4 +49,19 @@ describe('the module', function () {
       });
     });
   });
+
+  describe('.createSecure()', function () {
+    var module;
+    beforeEach(function () {
+      module = require('../');
+      sinon.stub(module, 'create').returns({});
+    })
+    afterEach(function () {
+      module.create.restore();
+    })
+    it('calls create() with the default https module', function () {
+      module.createSecure();
+      assert(module.create.calledWith(require('https')), 'create not called with https');
+    });
+  });
 })
