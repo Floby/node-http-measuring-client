@@ -89,7 +89,7 @@ describe('measure-http', function () {
             listenerArgs = [].slice.call(arguments);
           });
           mhttp.request(options);
-          request.emit('response', response);
+          setTimeout(request.emit.bind(request, 'response', response), 30);
           setTimeout(function () {
             response.emit('end');
             done();
@@ -103,13 +103,26 @@ describe('measure-http', function () {
         });
 
         describe('when the request takes some time to reply', function () {
-          it('is called with a stats object, with a totalTime field', function () {
+          it('is called with a stats object', function () {
             var stats = listenerArgs[1];
             expect(stats).to.be.an('object');
-            expect(stats).to.have.property('totalTime');
-            // using within because setTimeout is not perfect
-            expect(stats.totalTime).to.be.within(100, 102);
           });
+          describe('the emitted stats object', function () {
+            var stats;
+            beforeEach(function () {
+              stats = listenerArgs[1];
+            });
+
+            it('has a totalTime property', function () {
+              expect(stats).to.have.property('totalTime');
+              expect(stats.totalTime).to.be.within(100, 102);
+            });
+
+            it('has a processingTime property', function () {
+              expect(stats).to.have.property('processingTime');
+              expect(stats.processingTime).to.be.within(30, 31);
+            });
+          })
         });
       });
     })

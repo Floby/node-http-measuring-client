@@ -18,7 +18,9 @@ exports.create = function createHttp() {
     var timer = new Timer();
     timer.start('totalTime');
     var req = http.request(options, onResponse);
+    setImmediate(timer.start.bind(timer, 'processingTime'));
     req.on('response', function(response) {
+      timer.stop('processingTime');
       response.on('end', function() {
         MeasureHttp.emit('stat', uri, timer.toJSON());
       });
