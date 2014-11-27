@@ -8,6 +8,7 @@ exports.create = function createHttp() {
   var MeasureHttp = Object.create(http);
   mixin(MeasureHttp, EventEmitter.prototype);
   MeasureHttp.request = request;
+  MeasureHttp.get = get;
 
   return MeasureHttp;
 
@@ -22,6 +23,12 @@ exports.create = function createHttp() {
         MeasureHttp.emit('stat', uri, timer.toJSON());
       });
     });
+    return req;
+  }
+
+  function get (options, onResponse) {
+    var req = request(options, onResponse);
+    req.end();
     return req;
   }
 
