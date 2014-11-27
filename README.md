@@ -34,7 +34,7 @@ in combination with  [`request`](https://www.npmjs.org/package/request).
 ```javascript
 var http = require('http-measuring-client').create();
 var request = require('request').defaults({
- httpModules: { 'http': http }
+ httpModules: { 'http:': http }
 });
 
 request('http://google.com', function (err, response) {
