@@ -120,7 +120,7 @@ describe('measure-http', function () {
 
             it('has a processingTime property', function () {
               expect(stats).to.have.property('processingTime');
-              expect(stats.processingTime).to.be.within(30, 31);
+              expect(stats.processingTime).to.be.within(29, 31);
             });
 
             it('has a transmittingTime property', function () {
