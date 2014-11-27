@@ -34,6 +34,17 @@ describe('timer', function () {
         clock.tick(400);
         expect(timer.stop('myKey')).to.equal(400);
       });
+
+      describe('when called again', function () {
+        beforeEach(function () {
+          clock.tick(200);
+          timer.stop('myKey');
+          clock.tick(200);
+        });
+        it('returns the same result as the first time', function () {
+          expect(timer.stop('myKey')).to.equal(200);
+        });
+      });
     });
 
     describe('with a later call to .start(otherKey)', function () {
