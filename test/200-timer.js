@@ -31,6 +31,29 @@ describe('timer', function () {
       expect(timer.start()).to.equal(25000);
     });
 
+    describe('.peek(key)', function () {
+      it('is a function', function () {
+        expect(timer).to.have.property('peek');
+        expect(timer.peek).to.be.a('function');
+      });
+
+      it('returns the time elapsed since the call to start(key)', function () {
+        timer.start('aaa');
+        clock.tick(5000);
+        expect(timer.peek('aaa')).to.equal(5000);
+      });
+
+      describe('when called again later', function () {
+        it('still returns the time elapsed sine the call to start(key)', function () {
+          timer.start('aaa');
+          clock.tick(2000);
+          timer.peek('aaa');
+          clock.tick(4000);
+          expect(timer.peek('aaa')).to.equal(6000);
+        });
+      });
+    });
+
     describe('.stop(key)', function () {
       beforeEach(function () {
         timer.start('myKey');
@@ -38,6 +61,15 @@ describe('timer', function () {
       it('returns the time elapsed since the call to start() with the same key (milliseconds)', function () {
         clock.tick(400);
         expect(timer.stop('myKey')).to.equal(400);
+      });
+
+      describe('.peek(key) called later', function () {
+        it('returns the time elapsed until stopped', function () {
+          clock.tick(400);
+          timer.stop('myKey');
+          clock.tick(300);
+          expect(timer.peek('myKey')).to.equal(400);
+        });
       });
 
       describe('when called again', function () {
