@@ -1,4 +1,7 @@
+var EventEmitter = require('events').EventEmitter;
+var sinon = require('sinon');
 var expect = require('chai').expect;
+var assert = require('chai').assert;
 
 describe('the module', function () {
   it('is requirable', function () {
@@ -33,6 +36,16 @@ describe('the module', function () {
         var mhttp = module.create();
         var http = require('http');
         expect(mhttp).not.to.equal(http, 'should not be the same object');
+      });
+    });
+
+    describe('when given an argument', function () {
+      it('delegates to that object instead of the built-in http', function () {
+        var MyHttp = {request: sinon.stub().returns(new EventEmitter())};
+        var http = require('../').create(MyHttp);
+        var onResponse = sinon.spy();
+        http.request('http://google.com', onResponse);
+        assert(MyHttp.request.calledWith('http://google.com', onResponse), 'call was not delegated');
       });
     });
   });

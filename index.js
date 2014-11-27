@@ -4,8 +4,9 @@ var EventEmitter = require('events').EventEmitter;
 var mixin = require('merge-descriptors');
 var Timer = require('./lib/timer');
 
-exports.create = function createHttp() {
-  var MeasureHttp = Object.create(http);
+exports.create = function createHttp(httpModule) {
+  var httpModule = httpModule || http;
+  var MeasureHttp = Object.create(httpModule);
   mixin(MeasureHttp, EventEmitter.prototype);
   MeasureHttp.request = request;
   MeasureHttp.get = get;
@@ -17,7 +18,7 @@ exports.create = function createHttp() {
     if(typeof uri === 'string') uri = url.parse(uri);
     var timer = new Timer();
     timer.start('totalTime');
-    var req = http.request(options, onResponse);
+    var req = httpModule.request(options, onResponse);
     setImmediate(timer.start.bind(timer, 'processingTime'));
     setImmediate(timer.start.bind(timer, 'connectionTime'));
     req.on('socket', timer.stop.bind(timer, 'connectionTime'));
