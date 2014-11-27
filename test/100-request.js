@@ -89,6 +89,7 @@ describe('measure-http', function () {
             listenerArgs = [].slice.call(arguments);
           });
           mhttp.request(options);
+          setTimeout(request.emit.bind(request, 'socket', {}), 20);
           setTimeout(request.emit.bind(request, 'response', response), 30);
           setTimeout(function () {
             response.emit('end');
@@ -126,6 +127,11 @@ describe('measure-http', function () {
             it('has a transmittingTime property', function () {
               expect(stats).to.have.property('transmittingTime');
               expect(stats.transmittingTime).to.be.within(70, 71);
+            });
+
+            it('has a connectionTime property', function () {
+              expect(stats).to.have.property('connectionTime');
+              expect(stats.connectionTime).to.be.within(20, 21);
             });
           })
         });

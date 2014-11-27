@@ -19,6 +19,8 @@ exports.create = function createHttp() {
     timer.start('totalTime');
     var req = http.request(options, onResponse);
     setImmediate(timer.start.bind(timer, 'processingTime'));
+    setImmediate(timer.start.bind(timer, 'connectionTime'));
+    req.on('socket', timer.stop.bind(timer, 'connectionTime'));
     req.on('response', function(response) {
       timer.stop('processingTime');
       timer.start('transmittingTime');
