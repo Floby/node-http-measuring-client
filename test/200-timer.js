@@ -129,6 +129,19 @@ describe('timer', function () {
         var second = timer.toJSON();
         expect(first).not.to.deep.equal(second, 'both toJSON were identical');
       });
+
+      describe('when timers are stopped', function () {
+        it('returns the stopping delta for each key', function () {
+        timer.stop('keyA');
+        timer.stop('keyB');
+        timer.stop('keyC');
+        timer.stop('keyD');
+        var first = timer.toJSON();
+        clock.tick(500);
+        var second = timer.toJSON();
+        expect(first).to.deep.equal(second);
+        });
+      });
     });
   });
 
