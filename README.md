@@ -6,7 +6,7 @@ node-http-measuring-client
 > like the http module, except with stats
 
 This module generates objects usable as a drop-in replacement for
-the built-in http module. It keeps stats about outbound requests
+the built-in http module. It emits stats about outbound requests
 
 Installation
 ------------
@@ -42,22 +42,39 @@ request('http://google.com', function (err, response) {
 });
 ```
 
+You can also use it as a replacement for the `https` module
+```javascript
+var https = require('http-measuring-client').createSecure();
+```
+
+In fact, you can use whatever implementation of a `http` or `https` module like so
+```javascript
+var http = require('http-measuring-client').create(MyOwnHttpModule);
+```
+
 Comprehensive Documentation
 ---------------------------
 
-* `.create()`  returns a `http` object usable as a drop-in replacement for the built-in module
-* `Event "stat"`: emitted on the http object everytime a request is completed. It is amitted with two arguments : `uri` and `stats`. The `stats` object looks like this
+* `.create([httpModule])`  returns a `http` object usable as a drop-in replacement for
+the built-in module. If called with an argument, then it will use that instead of the
+default `http` module
 
-  * `totalTime` : total time taken for the request in milliseconds
+* `.createSecure()` calls the previous function with the default `https` module.
+
+* `Event "stat"`: emitted on the http object everytime a request is completed. It is
+emitted with two arguments : `uri` and `stats`. The `stats` object looks
+like this (all times are milliseconds) :
+
+  * `totalTime` : total time taken for the request
+  * `connectionTime` : time taken until the 'socket' event on the request
+  * `processingTime` : time taken until the 'response' event on the response
+  * `transmittingTime` : time taken from the 'response' event until its 'end' event
 
 
 TODO
 ----
 
-* Obviously support https as well
-* More detailed stats than `totalTime` (waitingTime, transmittingTime, etc.)
 * interconnection with logging frameworks like bunyan or winston
-
 
 Test
 ----
