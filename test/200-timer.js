@@ -122,6 +122,13 @@ describe('timer', function () {
           keyD: 1000
         });
       });
+
+      it('doesn\'t stop timers', function () {
+        var first = timer.toJSON();
+        clock.tick(500);
+        var second = timer.toJSON();
+        expect(first).not.to.deep.equal(second, 'both toJSON were identical');
+      });
     });
   });
 
