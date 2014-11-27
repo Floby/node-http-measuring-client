@@ -116,7 +116,7 @@ describe('measure-http', function () {
 
             it('has a totalTime property', function () {
               expect(stats).to.have.property('totalTime');
-              expect(stats.totalTime).to.be.within(100, 102);
+              expect(stats.totalTime).to.be.within(99, 104);
             });
 
             it('has a processingTime property', function () {
@@ -126,12 +126,12 @@ describe('measure-http', function () {
 
             it('has a transmittingTime property', function () {
               expect(stats).to.have.property('transmittingTime');
-              expect(stats.transmittingTime).to.be.within(70, 71);
+              expect(stats.transmittingTime).to.be.within(69, 71);
             });
 
             it('has a connectionTime property', function () {
               expect(stats).to.have.property('connectionTime');
-              expect(stats.connectionTime).to.be.within(20, 21);
+              expect(stats.connectionTime).to.be.within(19, 21);
             });
           })
         });
