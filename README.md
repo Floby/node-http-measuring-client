@@ -52,6 +52,25 @@ In fact, you can use whatever implementation of a `http` or `https` module like 
 var http = require('http-measuring-client').create(MyOwnHttpModule);
 ```
 
+
+##### Patch the global http module
+
+It is possible, though not recommended, to monkey-patch the global
+`http` module in order to have stats for absolutely all outgoing requests
+
+```javascript
+var mhttp = require('http-measuring-client').create();
+mhttp.mixin(http);
+mhttp.on('stat', onStat);
+
+var superagent = require('superagent');
+
+superagent('http://google.com').get('/search').end();
+```
+
+The main advantages is to deal with http modules which are not
+extensible.
+
 Comprehensive Documentation
 ---------------------------
 
