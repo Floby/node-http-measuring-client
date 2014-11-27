@@ -107,7 +107,8 @@ describe('measure-http', function () {
             var stats = listenerArgs[1];
             expect(stats).to.be.an('object');
             expect(stats).to.have.property('totalTime');
-            expect(stats.totalTime).to.be.within(100, 102); // setTimeout is not that perfect
+            // using within because setTimeout is not perfect
+            expect(stats.totalTime).to.be.within(100, 102);
           });
         });
       });

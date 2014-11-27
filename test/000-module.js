@@ -30,9 +30,10 @@ describe('the module', function () {
       });
 
       it('is not the http module though', function () {
-        var http = module.create();
-        expect(http).not.to.equal(require('http'), 'should not be the same object');
+        var mhttp = module.create();
+        var http = require('http');
+        expect(mhttp).not.to.equal(http, 'should not be the same object');
       });
-    })
-  })
+    });
+  });
 })
