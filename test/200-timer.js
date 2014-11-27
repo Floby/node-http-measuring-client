@@ -26,6 +26,11 @@ describe('timer', function () {
       expect(timer.start).to.be.a('function');
     });
 
+    it('returns the current time', function () {
+      clock.tick(25000);
+      expect(timer.start()).to.equal(25000);
+    });
+
     describe('.stop(key)', function () {
       beforeEach(function () {
         timer.start('myKey');
