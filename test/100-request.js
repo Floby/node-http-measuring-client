@@ -122,6 +122,11 @@ describe('measure-http', function () {
               expect(stats).to.have.property('processingTime');
               expect(stats.processingTime).to.be.within(30, 31);
             });
+
+            it('has a transmittingTime property', function () {
+              expect(stats).to.have.property('transmittingTime');
+              expect(stats.transmittingTime).to.be.within(70, 71);
+            });
           })
         });
       });

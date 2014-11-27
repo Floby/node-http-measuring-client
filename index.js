@@ -21,7 +21,9 @@ exports.create = function createHttp() {
     setImmediate(timer.start.bind(timer, 'processingTime'));
     req.on('response', function(response) {
       timer.stop('processingTime');
+      timer.start('transmittingTime');
       response.on('end', function() {
+        timer.stop('transmittingTime');
         MeasureHttp.emit('stat', uri, timer.toJSON());
       });
     });
