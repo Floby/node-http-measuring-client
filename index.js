@@ -42,13 +42,18 @@ exports.create = function createHttp(httpModule) {
   }
 
   function patchMethods (httpToPatch) {
+    patchRequest(httpToPatch);
+    patchGet(httpToPatch);
+  }
+
+  function patchRequest (httpToPatch) {
     var originalRequest = httpToPatch.request;
     var overrideRequest = MeasureHttp.request;
     httpToPatch.request = patchedRequest;
 
     function patchedRequest (options, onResponse) {
-      // hot replacement in case httpToPatch is the httpModule
-      // we are using
+      // hot-replace in case httpToPatch is the
+      // httpModule we are using
       httpToPatch.request = originalRequest;
       var req = overrideRequest(options, onResponse);
       httpToPatch.request = patchedRequest;
@@ -56,6 +61,18 @@ exports.create = function createHttp(httpModule) {
     }
   }
 
+  function patchGet (httpToPatch) {
+    var originalGet = httpToPatch.get;
+    var overrideGet = MeasureHttp.get;
+    httpToPatch.get = patchedGet;
+
+    function patchedGet (options, onResponse) {
+      httpToPatch.get = originalGet;
+      var req = overrideGet(options, onResponse);
+      httpToPatch.get = patchedGet;
+      return req;
+    }
+  }
 };
 
 exports.createSecure = function () {
