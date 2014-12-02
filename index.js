@@ -21,6 +21,19 @@ exports.create = function createHttp(httpModule) {
     var timer = new Timer();
     timer.start('totalTime');
     var req = httpModule.request(options, onResponse);
+    if(!usingPatched(httpModule.request)) {
+      setupTimerForRequest(timer, req, uri);
+    }
+    return req;
+  }
+
+  function get (options, onResponse) {
+    var req = request(options, onResponse);
+    req.end();
+    return req;
+  }
+
+  function setupTimerForRequest (timer, req, uri) {
     setImmediate(timer.start.bind(timer, 'processingTime'));
     setImmediate(timer.start.bind(timer, 'connectionTime'));
     req.on('socket', timer.stop.bind(timer, 'connectionTime'));
@@ -32,14 +45,8 @@ exports.create = function createHttp(httpModule) {
         MeasureHttp.emit('stat', uri, timer.toJSON());
       });
     });
-    return req;
   }
 
-  function get (options, onResponse) {
-    var req = request(options, onResponse);
-    req.end();
-    return req;
-  }
 
   function patchMethods (httpToPatch) {
     monkeyPatch(httpToPatch, 'request');
@@ -50,6 +57,7 @@ exports.create = function createHttp(httpModule) {
     var original = httpToPatch[method];
     var override = MeasureHttp[method];
     httpToPatch[method] = patched;
+    patched._isPatch = PATCH_FLAG;
 
     function patched (options, onResponse) {
       // hot-replace in case httpToPatch is the
@@ -60,7 +68,13 @@ exports.create = function createHttp(httpModule) {
       return req;
     }
   }
+
+  function usingPatched (func) {
+    return func._isPatch === PATCH_FLAG;
+  }
 };
+
+var PATCH_FLAG = {};
 
 exports.createSecure = function () {
   return exports.create(https);

@@ -2,6 +2,7 @@ var url = require('url');
 var sinon = require('sinon');
 var blackhole = require('stream-blackhole');
 var expect = require('chai').expect;
+var assert = require('chai').assert;
 
 describe('When making actual requests', function () {
   var mhttp, server;
@@ -54,5 +55,20 @@ describe('When making actual requests', function () {
         done();
       }
     });
+    describe('when monkey patching http', function () {
+      it('does not trigger the event twice', function (done) {
+        var http = require('http')
+        mhttp.mixin(http);
+        var onStat = sinon.spy();
+        mhttp.on('stat', onStat);
+
+        http.get('http://localhost:'+port+'/hello', function (response) {
+          response.pipe(blackhole()).on('finish', function () {
+            assert(onStat.callCount < 2, 'onStat called multiple times');
+            done();
+          });
+        });
+      });
+    })
   });
 });
