@@ -42,34 +42,21 @@ exports.create = function createHttp(httpModule) {
   }
 
   function patchMethods (httpToPatch) {
-    patchRequest(httpToPatch);
-    patchGet(httpToPatch);
+    monkeyPatch(httpToPatch, 'request');
+    monkeyPatch(httpToPatch, 'get');
   }
 
-  function patchRequest (httpToPatch) {
-    var originalRequest = httpToPatch.request;
-    var overrideRequest = MeasureHttp.request;
-    httpToPatch.request = patchedRequest;
+  function monkeyPatch (httpToPatch, method) {
+    var original = httpToPatch[method];
+    var override = MeasureHttp[method];
+    httpToPatch[method] = patched;
 
-    function patchedRequest (options, onResponse) {
+    function patched (options, onResponse) {
       // hot-replace in case httpToPatch is the
       // httpModule we are using
-      httpToPatch.request = originalRequest;
-      var req = overrideRequest(options, onResponse);
-      httpToPatch.request = patchedRequest;
-      return req;
-    }
-  }
-
-  function patchGet (httpToPatch) {
-    var originalGet = httpToPatch.get;
-    var overrideGet = MeasureHttp.get;
-    httpToPatch.get = patchedGet;
-
-    function patchedGet (options, onResponse) {
-      httpToPatch.get = originalGet;
-      var req = overrideGet(options, onResponse);
-      httpToPatch.get = patchedGet;
+      httpToPatch[method] = original;
+      var req = override(options, onResponse);
+      httpToPatch[method] = patched;
       return req;
     }
   }
