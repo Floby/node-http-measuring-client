@@ -11,6 +11,7 @@ exports.create = function createHttp(httpModule) {
   mixin(MeasureHttp, EventEmitter.prototype);
   MeasureHttp.request = request;
   MeasureHttp.get = get;
+  MeasureHttp.mixin = patchMethods;
 
   return MeasureHttp;
 
@@ -38,6 +39,21 @@ exports.create = function createHttp(httpModule) {
     var req = request(options, onResponse);
     req.end();
     return req;
+  }
+
+  function patchMethods (httpToPatch) {
+    var originalRequest = httpToPatch.request;
+    var overrideRequest = MeasureHttp.request;
+    httpToPatch.request = patchedRequest;
+
+    function patchedRequest (options, onResponse) {
+      // hot replacement in case httpToPatch is the httpModule
+      // we are using
+      httpToPatch.request = originalRequest;
+      var req = overrideRequest(options, onResponse);
+      httpToPatch.request = patchedRequest;
+      return req;
+    }
   }
 
 };
