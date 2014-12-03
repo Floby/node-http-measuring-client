@@ -16,8 +16,7 @@ exports.create = function createHttp(httpModule) {
   return MeasureHttp;
 
   function request (options, onResponse) {
-    var uri = options;
-    if(typeof uri === 'string') uri = url.parse(uri);
+    var uri = getUriFromOptions(options);
     var timer = new Timer();
     timer.start('totalTime');
     var req = httpModule.request(options, onResponse);
@@ -31,6 +30,13 @@ exports.create = function createHttp(httpModule) {
     var req = request(options, onResponse);
     req.end();
     return req;
+  }
+
+  function getUriFromOptions (options) {
+    var uri = options;
+    if(typeof uri === 'string') uri = url.parse(uri);
+    if(uri.uri) uri = uri.uri
+    return uri;
   }
 
   function setupTimerForRequest (timer, req, uri) {
