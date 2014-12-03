@@ -38,26 +38,6 @@ describe('When making actual requests', function () {
     }
   });
 
-  describe('with `request`', function () {
-    var request;
-    beforeEach(function () {
-      request = require('request').defaults({
-        httpModules: { 'http:': mhttp }
-      });
-    });
-
-    it('emits stats with the options.uri object', function (done) {
-      var onStat = sinon.spy(assertions);
-      mhttp.on('stat', onStat);
-      request('http://localhost:'+port+'/hello', function (err, res) {});
-
-      function assertions (parsed, stat) {
-        var uri = url.format(parsed);
-        expect(uri).to.equal('http://localhost:'+port+'/hello');
-        done();
-      }
-    });
-  });
 
   describe('with method .get()', function () {
     it('measure the totalTime', function (done) {
@@ -77,9 +57,15 @@ describe('When making actual requests', function () {
       }
     });
     describe('when monkey patching http', function () {
-      it('does not trigger the event twice', function (done) {
-        var http = require('http')
+      var http;
+      beforeEach(function () {
+        http = require('http')
         mhttp.mixin(http);
+      });
+      afterEach(function () {
+        mhttp.unmix(http);
+      });
+      it('does not trigger the event twice', function (done) {
         var onStat = sinon.spy();
         mhttp.on('stat', onStat);
 
@@ -91,6 +77,27 @@ describe('When making actual requests', function () {
         });
       });
     })
+  });
+
+  describe('with `request`', function () {
+    var request;
+    beforeEach(function () {
+      request = require('request').defaults({
+        httpModules: { 'http:': mhttp }
+      });
+    });
+
+    it('emits stats with the options.uri object', function (done) {
+      var onStat = sinon.spy(assertions);
+      mhttp.on('stat', onStat);
+      request('http://localhost:'+port+'/hello', function (err, res) {});
+
+      function assertions (parsed, stat) {
+        var uri = url.format(parsed);
+        expect(uri).to.equal('http://localhost:'+port+'/hello');
+        done();
+      }
+    });
   });
 
 });
