@@ -31,6 +31,7 @@
     "istanbul": "^0.3.2",
     "mocha": "^2.0.1",
     "nock": "^0.51.0",
+    "request": "^2.49.0",
     "sinon": "^1.12.1",
     "stream-blackhole": "^1.0.3"
   },
