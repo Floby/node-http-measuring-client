@@ -79,12 +79,11 @@ exports.create = function createHttp(httpModule) {
   }
 
   function unpatchMethods (patchedHttp) {
-    if(usingPatched(patchedHttp.get)) {
-      patchedHttp.get = patchedHttp.get._original;
-    }
-    if(usingPatched(patchedHttp.request)) {
-      patchedHttp.request = patchedHttp.request._original;
-    }
+    ['request', 'get'].forEach(function (method) {
+      if(usingPatched(patchedHttp[method])) {
+        patchedHttp[method] = patchedHttp[method]._original;
+      }
+    });
   }
 
   function usingPatched (func) {
