@@ -74,6 +74,15 @@ describe('an instance', function () {
         mhttp.unmix(http);
         expect(http.request).to.equal(originalRequest);
       });
+
+      describe('called twice', function () {
+        it('does nothing and does not throw', function () {
+          mhttp.unmix(http);
+          mhttp.unmix(http);
+          expect(http.request).to.equal(originalRequest);
+          expect(http.get).to.equal(originalGet);
+        });
+      })
     });
   });
 
