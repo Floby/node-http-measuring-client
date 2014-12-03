@@ -46,5 +46,35 @@ describe('an instance', function () {
       assert(req.end.calledOnce, 'end() is called this time');
       expect(actual).to.equal(req);
     });
+
+    describe('.unmix(module)', function () {
+      var originalGet,
+          originalRequest,
+          req,
+          mhttp,
+          http;
+
+      beforeEach(function () {
+        req = new EventEmitter();
+        originalGet = sinon.stub().returns(req);
+        originalRequest = sinon.stub().returns(req);
+        http = {
+          get: originalGet,
+          request: originalRequest
+        }
+        mhttp = require('../').create(http);
+        mhttp.mixin(http);
+      })
+
+      it('sets the get method back to its original value', function () {
+        mhttp.unmix(http);
+        expect(http.get).to.equal(originalGet);
+      });
+      it('sets the request method back to its original value', function () {
+        mhttp.unmix(http);
+        expect(http.request).to.equal(originalRequest);
+      });
+    });
   });
+
 });

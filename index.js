@@ -12,6 +12,7 @@ exports.create = function createHttp(httpModule) {
   MeasureHttp.request = request;
   MeasureHttp.get = get;
   MeasureHttp.mixin = patchMethods;
+  MeasureHttp.unmix = unpatchMethods;
 
   return MeasureHttp;
 
@@ -63,7 +64,9 @@ exports.create = function createHttp(httpModule) {
     var original = httpToPatch[method];
     var override = MeasureHttp[method];
     httpToPatch[method] = patched;
-    patched._isPatch = PATCH_FLAG;
+    Object.defineProperty(patched, '_isPatch', { value: PATCH_FLAG });
+    Object.defineProperty(patched, '_orignal', { value: original });
+    patched._original = original;
 
     function patched (options, onResponse) {
       // hot-replace in case httpToPatch is the
@@ -72,6 +75,15 @@ exports.create = function createHttp(httpModule) {
       var req = override(options, onResponse);
       httpToPatch[method] = patched;
       return req;
+    }
+  }
+
+  function unpatchMethods (patchedHttp) {
+    if(usingPatched(patchedHttp.get)) {
+      patchedHttp.get = patchedHttp.get._original;
+    }
+    if(usingPatched(patchedHttp.request)) {
+      patchedHttp.request = patchedHttp.request._original;
     }
   }
 
