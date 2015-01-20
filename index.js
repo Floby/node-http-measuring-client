@@ -50,7 +50,7 @@ exports.create = function createHttp(httpModule) {
       response.on('end', function() {
         timer.stop('transmittingTime');
         var json = timer.toJSON();
-        json.response = response;
+        json.statusCode = response.statusCode;
         MeasureHttp.emit('stat', uri, timer.toJSON());
       });
     });
