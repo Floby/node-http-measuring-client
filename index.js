@@ -51,7 +51,7 @@ exports.create = function createHttp(httpModule) {
         timer.stop('transmittingTime');
         var json = timer.toJSON();
         json.statusCode = response.statusCode;
-        MeasureHttp.emit('stat', uri, timer.toJSON());
+        MeasureHttp.emit('stat', uri, json);
       });
     });
   }
