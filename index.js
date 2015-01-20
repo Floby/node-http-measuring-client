@@ -49,6 +49,8 @@ exports.create = function createHttp(httpModule) {
       timer.start('transmittingTime');
       response.on('end', function() {
         timer.stop('transmittingTime');
+        var json = timer.toJSON();
+        json.response = response;
         MeasureHttp.emit('stat', uri, timer.toJSON());
       });
     });
