@@ -33,7 +33,7 @@ describe('When making actual requests', function () {
 
     function assertions (uri, stats) {
       expect(url.format(uri)).to.equal('http://localhost:'+port+'/hello');
-      expect(stats.totalTime).to.be.within(150, 170);
+      expect(stats.totalTime).to.be.within(150, 200);
       done();
     }
   });
