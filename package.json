@@ -1,6 +1,6 @@
 {
   "name": "http-measuring-client",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "like the http module, except with stats",
   "main": "index.js",
   "scripts": {
