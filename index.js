@@ -65,6 +65,7 @@ function createHttp(httpModule) {
       MeasureHttp.emit('stat', uri, {
         ...times,
         success: false,
+        method: req.method || 'GET',
         error,
         errorMessage: error.message,
         errorCode: error.code,
