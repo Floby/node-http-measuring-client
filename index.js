@@ -4,8 +4,12 @@ var https = require('https');
 var EventEmitter = require('events').EventEmitter;
 var mixin = require('merge-descriptors');
 var Timer = require('./lib/timer');
+module.exports = {
+  create: createHttp,
+  createSecure: createHttps
+}
 
-exports.create = function createHttp(httpModule) {
+function createHttp(httpModule) {
   var httpModule = httpModule || http;
   var MeasureHttp = Object.create(httpModule);
   mixin(MeasureHttp, EventEmitter.prototype);
@@ -41,9 +45,9 @@ exports.create = function createHttp(httpModule) {
   }
 
   function setupTimerForRequest (timer, req, uri) {
-    setImmediate(timer.start.bind(timer, 'processingTime'));
-    setImmediate(timer.start.bind(timer, 'connectionTime'));
-    req.on('socket', timer.stop.bind(timer, 'connectionTime'));
+    setImmediate(() => timer.start('processingTime'));
+    setImmediate(() => timer.start('connectionTime'));
+    req.on('socket', () => timer.stop('connectionTime'));
     req.on('response', function(response) {
       timer.stop('processingTime');
       timer.start('transmittingTime');
@@ -52,9 +56,22 @@ exports.create = function createHttp(httpModule) {
         var json = timer.toJSON();
         json.statusCode = response.statusCode;
         json.method = req.method || 'GET';
+        json.success = true
         MeasureHttp.emit('stat', uri, json);
       });
     });
+    req.on('error', (error) => {
+      const times = timer.toJSON()
+      MeasureHttp.emit('stat', uri, {
+        ...times,
+        success: false,
+        error,
+        errorMessage: error.message,
+        errorCode: error.code,
+        errorErrno: error.errno,
+        errorShort: error.code || error.errno
+      })
+    })
   }
 
 
@@ -96,6 +113,6 @@ exports.create = function createHttp(httpModule) {
 
 var PATCH_FLAG = {};
 
-exports.createSecure = function () {
-  return exports.create(https);
+function createHttps () {
+  return module.exports.create(https);
 };

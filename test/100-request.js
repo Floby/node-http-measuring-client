@@ -4,9 +4,11 @@ var expect = require('chai').expect;
 var assert = require('chai').assert;
 var http = require('http');
 var sinon = require('sinon');
+const delay = require('delay')
 
 describe('measure-http', function () {
   var mhttp;
+  var listenerArgs;
 
   beforeEach(function () {
     mhttp = require('../').create();
@@ -53,7 +55,6 @@ describe('measure-http', function () {
       });
 
       describe('the emitted event', function () {
-        var listenerArgs;
         beforeEach(function (done) {
           mhttp.on('stat', function() {
             listenerArgs = [].slice.call(arguments);
@@ -114,6 +115,10 @@ describe('measure-http', function () {
               stats = listenerArgs[1];
             });
 
+            it('indicates success', () => {
+              expect(stats).to.have.property('success').equal(true)
+            })
+
             it('has a totalTime property', function () {
               expect(stats).to.have.property('totalTime');
               expect(stats.totalTime).to.be.within(99, 104);
@@ -136,6 +141,62 @@ describe('measure-http', function () {
           })
         });
       });
+      describe('when request errors before connection', () => {
+        const ErrorConnectionRefused = new Error('Connection Refused')
+        ErrorConnectionRefused.code = 'E_CONN_REFUSED'
+        ErrorConnectionRefused.errno = 'ECONNREFUSED'
+        let stats
+        beforeEach(() => {
+          mhttp.on('stat', (...args) => {
+            stats = args[1]
+          })
+          mhttp.request('http://bidu.le')
+          setTimeout(() => request.emit('error', ErrorConnectionRefused), 5)
+          return delay(10)
+        })
+        it('indicates failure', () => {
+          expect(stats).to.have.property('success').equal(false)
+        })
+        it('add errors information to the stat object', () => {
+          expect(stats).to.have.property('totalTime').within(5, 7)
+          expect(stats).to.contain({
+            success: false,
+            error: ErrorConnectionRefused,
+            errorShort: 'E_CONN_REFUSED',
+            errorMessage: 'Connection Refused',
+            errorCode: 'E_CONN_REFUSED',
+            errorErrno: 'ECONNREFUSED'
+          })
+        })
+      })
+      describe('when request errors after connection', () => {
+        const ErrorConnectionReset = new Error('Connection reset')
+        ErrorConnectionReset.errno = 'ECONNRESET'
+        let stats
+        beforeEach(() => {
+          mhttp.on('stat', (...args) => {
+            stats = args[1]
+          })
+          mhttp.request('http://bidu.le')
+          setTimeout(() => request.emit('socket', {}), 3)
+          setTimeout(() => request.emit('error', ErrorConnectionReset), 6)
+          return delay(10)
+        })
+        it('indicates failure', () => {
+          expect(stats).to.have.property('success').equal(false)
+        })
+        it('add errors information to the stat object', () => {
+          expect(stats).to.have.property('connectionTime').within(2, 4)
+          expect(stats).to.have.property('totalTime').within(6, 10)
+          expect(stats).to.contain({
+            success: false,
+            error: ErrorConnectionReset,
+            errorShort: 'ECONNRESET',
+            errorMessage: 'Connection reset',
+            errorErrno: 'ECONNRESET'
+          })
+        })
+      })
     })
   });
 })
